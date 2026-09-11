@@ -221,7 +221,7 @@ here, because the caller owns the stream and awaits the task immediately.
 A coroutine reads its parameters when its body runs, not when the call is
 written. A task that is stored and awaited later outlives its call expression,
 so a reference parameter can dangle by then. That is why the fan-out example on
-xref:4.coroutines/4f.composition.adoc[Concurrent Composition] takes its item by
+xref:4.coroutines/4g.composition.adoc[Concurrent Composition] takes its item by
 value: it collects its tasks first, then awaits them together.
 ====
 

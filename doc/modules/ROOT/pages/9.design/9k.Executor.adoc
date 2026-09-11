@@ -265,7 +265,7 @@ No heap allocation occurs -- the continuation is embedded in the awaitable, whic
 
 This pattern is identical across all five Corosio backends: epoll and io_uring (Linux), kqueue (BSD/macOS), IOCP (Windows), and select (portable fallback). The executor concept and cpp:executor_ref[] provide the abstraction that makes this possible. The backend-specific code deals with I/O readiness or completion notification. The executor-specific code deals with coroutine scheduling.
 
-NOTE: For the TLS save/restore protocol required around `.resume()` calls (cpp:safe_resume[]), including which two call sites are deliberately exempt, see xref:4.coroutines/4g.allocators.adoc#_tls_preservation[TLS Preservation].
+NOTE: For the TLS save/restore protocol required around `.resume()` calls (cpp:safe_resume[]), including which two call sites are deliberately exempt, see xref:4.coroutines/4h.allocators.adoc#_tls_preservation[TLS Preservation].
 
 == Why Not `std::execution` (P2300)
 

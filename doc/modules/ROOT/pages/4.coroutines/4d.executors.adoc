@@ -12,20 +12,20 @@ This rule is what keeps shared state safe by default. Consider a connection hand
 
 [source,cpp]
 ----
-include::example$snippets/4c_executors.cpp[tag=handle_client]
+include::example$snippets/4d_executors.cpp[tag=handle_client]
 ----
 
 Start this on a strand, and every resumption—after `conn.read()` and after `conn.write()`—happens on that strand. The update to `conn.stats.requests` is therefore free of data races without any mutex.
 
 Without the invariant, the coroutine could resume after `co_await conn.read()` on an `io_uring` completion thread, a pool thread, or wherever the I/O subsystem completed the operation. Correct code would then need either a mutex around every access to shared state or an explicit _resume-on-this-strand_ step after every `co_await`. A mutex defeats the purpose of the strand, and a single forgotten resume step reintroduces the data race.
 
-Because the invariant holds, the safe behavior is automatic and the unsafe behavior does not compile. Awaiting a _plain_ awaitable—one that could resume the coroutine on any thread—is rejected. See xref:4.coroutines/4d.io-awaitable.adoc#bridging-a-foreign-awaitable[Bridging a Foreign Awaitable] for why, and for the explicit escape hatch.
+Because the invariant holds, the safe behavior is automatic and the unsafe behavior does not compile. Awaiting a _plain_ awaitable—one that could resume the coroutine on any thread—is rejected. See xref:4.coroutines/4e.io-awaitable.adoc#bridging-a-foreign-awaitable[Bridging a Foreign Awaitable] for why, and for the explicit escape hatch.
 
 === How the Invariant Is Maintained
 
 Affinity propagates forward. Starting a task with cpp:run_async[]`(ex)` binds it to `ex`. A child `co_await`-ed from that task inherits the same executor automatically, and so on down the chain. When a child completes, control returns to its caller _through the caller's executor_. When both share the same executor—the common case—that return is a direct symmetric transfer with no queuing. Only a deliberate executor change requires a dispatch.
 
-That deliberate change is what `run` provides. It runs a subtree on a different executor and restores the caller's executor when the subtree completes (see xref:4.coroutines/4b.launching.adoc[Starting Coroutines]). This is also why I/O objects with executor-bound invariants—a socket tied to one `io_context`, a Windows IOCP handle, executor-specific timer state—remain safe. A coroutine holding them never resumes on the wrong executor mid-body.
+That deliberate change is what `run` provides. It runs a subtree on a different executor and restores the caller's executor when the subtree completes (see xref:4.coroutines/4c.launching.adoc[Starting Coroutines]). This is also why I/O objects with executor-bound invariants—a socket tied to one `io_context`, a Windows IOCP handle, executor-specific timer state—remain safe. A coroutine holding them never resumes on the wrong executor mid-body.
 
 == The Executor Concept
 
@@ -54,7 +54,7 @@ cpp:executor_ref[] wraps any executor in a type-erased container, allowing code 
 
 [source,cpp]
 ----
-include::example$programs/4c_executors_executor_ref.cpp[tag=full]
+include::example$programs/4d_executors_executor_ref.cpp[tag=full]
 ----
 
 cpp:executor_ref[] stores a reference to the underlying executor—the original executor must outlive the `executor_ref`.
@@ -65,7 +65,7 @@ cpp:thread_pool[] manages a pool of worker threads that execute coroutines concu
 
 [source,cpp]
 ----
-include::example$programs/4c_executors_thread_pool.cpp[tag=full]
+include::example$programs/4d_executors_thread_pool.cpp[tag=full]
 ----
 
 === Constructor Parameters
@@ -90,7 +90,7 @@ Custom execution contexts inherit from cpp:execution_context[]:
 
 [source,cpp]
 ----
-include::example$snippets/4c_executors.cpp[tag=my_context]
+include::example$snippets/4d_executors.cpp[tag=my_context]
 ----
 
 == strand: Serialization Without Mutexes
@@ -99,7 +99,7 @@ A cpp:strand[] ensures that handlers are executed in order, with no two handlers
 
 [source,cpp]
 ----
-include::example$snippets/4c_executors.cpp[tag=shared_resource]
+include::example$snippets/4d_executors.cpp[tag=shared_resource]
 ----
 
 === How Strands Work
@@ -126,7 +126,7 @@ For single-threaded applications, use a context with one thread:
 
 [source,cpp]
 ----
-include::example$snippets/4c_executors.cpp[tag=single_thread,indent=0]
+include::example$snippets/4d_executors.cpp[tag=single_thread,indent=0]
 ----
 
 === Multi-Threaded with Shared Data
@@ -135,7 +135,7 @@ For multi-threaded applications with shared data, use strands:
 
 [source,cpp]
 ----
-include::example$snippets/4c_executors.cpp[tag=data_strand,indent=0]
+include::example$snippets/4d_executors.cpp[tag=data_strand,indent=0]
 ----
 
 === Multi-Threaded with Independent Work
@@ -144,6 +144,6 @@ For embarrassingly parallel work with no shared state:
 
 [source,cpp]
 ----
-include::example$snippets/4c_executors.cpp[tag=independent_tasks,indent=0]
+include::example$snippets/4d_executors.cpp[tag=independent_tasks,indent=0]
 ----
 

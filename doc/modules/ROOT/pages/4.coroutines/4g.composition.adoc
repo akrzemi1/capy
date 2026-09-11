@@ -3,7 +3,7 @@
 
 Headers: `<boost/capy/when_all.hpp>` and `<boost/capy/when_any.hpp>`. cpp:async_waker[] on this page is `<boost/capy/ex/async_waker.hpp>`.
 
-Both combinators take cpp:io_task[] children and return their results as a single cpp:io_result[]. If those two names are new, read xref:4.coroutines/4a.tasks.adoc#io-result-and-io-task[Reporting Errors] first -- everything below is expressed in them.
+Both combinators take cpp:io_task[] children and return their results as a single cpp:io_result[]. If those two names are new, read xref:4.coroutines/4b.tasks.adoc#io-result-and-io-task[Reporting Errors] first -- everything below is expressed in them.
 
 == Overview
 
@@ -11,14 +11,14 @@ Sequential execution—one task after another—is the default when using `co_aw
 
 [source,cpp]
 ----
-include::example$snippets/4f_composition.cpp[tag=sequential,indent=0]
+include::example$snippets/4g_composition.cpp[tag=sequential,indent=0]
 ----
 
 For independent operations, concurrent execution is more efficient:
 
 [source,cpp]
 ----
-include::example$snippets/4f_composition.cpp[tag=concurrent,indent=0]
+include::example$snippets/4g_composition.cpp[tag=concurrent,indent=0]
 ----
 
 == when_all: Wait for All Tasks
@@ -27,7 +27,7 @@ cpp:when_all[] starts multiple cpp:io_task[] children concurrently and waits for
 
 [source,cpp]
 ----
-include::example$snippets/4f_composition.cpp[tag=when_all_basic,indent=0]
+include::example$snippets/4g_composition.cpp[tag=when_all_basic,indent=0]
 ----
 
 === Result Type
@@ -40,14 +40,14 @@ cpp:io_task[io_task<>] children contribute `tuple<>` to the result:
 
 [source,cpp]
 ----
-include::example$snippets/4f_composition.cpp[tag=when_all_void_mix,indent=0]
+include::example$snippets/4g_composition.cpp[tag=when_all_void_mix,indent=0]
 ----
 
 When all children are cpp:io_task[io_task<>], just check the error code:
 
 [source,cpp]
 ----
-include::example$snippets/4f_composition.cpp[tag=when_all_all_void,indent=0]
+include::example$snippets/4g_composition.cpp[tag=when_all_all_void,indent=0]
 ----
 
 === Error Handling
@@ -60,14 +60,14 @@ I/O errors are reported through the error code that leads the cpp:io_result[io_r
 
 [source,cpp]
 ----
-include::example$snippets/4f_composition.cpp[tag=when_all_error,indent=0]
+include::example$snippets/4g_composition.cpp[tag=when_all_error,indent=0]
 ----
 
 If a task throws an exception, it is captured and rethrown after all tasks complete. Exceptions take priority over `ec`.
 
 [source,cpp]
 ----
-include::example$snippets/4f_composition.cpp[tag=when_all_exception,indent=0]
+include::example$snippets/4g_composition.cpp[tag=when_all_exception,indent=0]
 ----
 
 === Stop Propagation
@@ -76,7 +76,7 @@ Well-behaved tasks should check their stop token and exit promptly:
 
 [source,cpp]
 ----
-include::example$snippets/4f_composition.cpp[tag=stop_propagation,indent=0]
+include::example$snippets/4g_composition.cpp[tag=stop_propagation,indent=0]
 ----
 
 == when_any: First-to-Succeed Wins
@@ -85,7 +85,7 @@ cpp:when_any[] starts multiple cpp:io_task[] children concurrently and returns w
 
 [source,cpp]
 ----
-include::example$snippets/4f_composition.cpp[tag=when_any_basic,indent=0]
+include::example$snippets/4g_composition.cpp[tag=when_any_basic,indent=0]
 ----
 
 The result is a `variant` with `error_code` at index 0 (failure/no winner) and one alternative per input task at indices 1..N. When a winner is found, stop is requested for all siblings. All tasks complete before cpp:when_any[] returns.
@@ -106,14 +106,14 @@ The first pattern translates a specific, benign error into success. Other errors
 
 [source,cpp]
 ----
-include::example$snippets/4f_composition.cpp[tag=wrap_translate_error,indent=0]
+include::example$snippets/4g_composition.cpp[tag=wrap_translate_error,indent=0]
 ----
 
 The second pattern lifts the inner `ec` into the payload. The wrapper always succeeds, so it wins on its first completion, carrying the original error code to the caller:
 
 [source,cpp]
 ----
-include::example$snippets/4f_composition.cpp[tag=wrap_lift_error,indent=0]
+include::example$snippets/4g_composition.cpp[tag=wrap_lift_error,indent=0]
 ----
 
 == Practical Patterns
@@ -124,7 +124,7 @@ Fetch multiple resources simultaneously:
 
 [source,cpp]
 ----
-include::example$snippets/4f_composition.cpp[tag=parallel_fetch,indent=0]
+include::example$snippets/4g_composition.cpp[tag=parallel_fetch,indent=0]
 ----
 
 === Fan-Out/Fan-In
@@ -133,7 +133,7 @@ Process items in parallel, then combine results using the range overload:
 
 [source,cpp]
 ----
-include::example$snippets/4f_composition.cpp[tag=fan_out,indent=0]
+include::example$snippets/4g_composition.cpp[tag=fan_out,indent=0]
 ----
 
 [NOTE]

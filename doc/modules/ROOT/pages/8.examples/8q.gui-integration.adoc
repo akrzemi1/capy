@@ -47,7 +47,7 @@ include::example$gui-integration/gui_integration.cpp[tag=run,indent=0]
 
 The loop blocks while the queue is empty. A GUI loop must do this: the background operation is still running, and an empty queue does not mean the program is finished. `quit()` sets the flag that lets the loop return once the queue drains.
 
-Resumption goes through cpp:safe_resume[] rather than `h.resume()`. This saves and restores the thread-local frame allocator around each resumption. See xref:4.coroutines/4g.allocators.adoc#_tls_preservation[TLS Preservation].
+Resumption goes through cpp:safe_resume[] rather than `h.resume()`. This saves and restores the thread-local frame allocator around each resumption. See xref:4.coroutines/4h.allocators.adoc#_tls_preservation[TLS Preservation].
 
 === Wrapping the Primitive as an Executor
 
@@ -107,7 +107,7 @@ Three contracts combine to put that boundary on the GUI thread:
 * cpp:task[] propagates that pointer into every `co_await` in its body. A task completes by symmetric transfer and never posts, so nothing in the chain substitutes a different executor.
 * cpp:run[] records the caller's executor and posts the caller back through it when the inner task completes. That post runs on a pool thread and lands in the GUI queue.
 
-This is the xref:4.coroutines/4c.executors.adoc#the-same-executor-invariant[same-executor invariant] seen from a GUI application. Start the task on the GUI executor, and every line of the body runs on the GUI thread, whatever thread the awaited work ran on.
+This is the xref:4.coroutines/4d.executors.adoc#the-same-executor-invariant[same-executor invariant] seen from a GUI application. Start the task on the GUI executor, and every line of the body runs on the GUI thread, whatever thread the awaited work ran on.
 
 [NOTE]
 ====
@@ -128,7 +128,7 @@ cpp:run[] covers work you hand to Capy. A toolkit also completes operations of i
 include::example$gui-integration/gui_integration.cpp[tag=dialog]
 ----
 
-Awaiting that needs an cpp:IoAwaitable[]. xref:4.coroutines/4d.io-awaitable.adoc#bridging-a-foreign-awaitable[Bridging a Foreign Awaitable] covers the protocol. One line of it decides thread affinity:
+Awaiting that needs an cpp:IoAwaitable[]. xref:4.coroutines/4e.io-awaitable.adoc#bridging-a-foreign-awaitable[Bridging a Foreign Awaitable] covers the protocol. One line of it decides thread affinity:
 
 [source,cpp]
 ----

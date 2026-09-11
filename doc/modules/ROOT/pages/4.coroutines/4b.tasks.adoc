@@ -5,7 +5,7 @@ cpp:task[task<T>] is declared in:
 
 [source,cpp]
 ----
-include::example$snippets/4a_tasks.cpp[tag=include_task]
+include::example$snippets/4b_tasks.cpp[tag=include_task]
 ----
 
 [NOTE]
@@ -14,7 +14,7 @@ include::example$snippets/4a_tasks.cpp[tag=include_task]
 
 [source,cpp]
 ----
-include::example$snippets/4a_tasks.cpp[tag=include_umbrella]
+include::example$snippets/4b_tasks.cpp[tag=include_umbrella]
 ----
 
 Unless otherwise specified, all code examples in this documentation assume the following:
@@ -40,7 +40,7 @@ Key characteristics:
 * *Symmetric transfer* — Efficient resumption without stack accumulation
 * *Executor inheritance* — Inherits the caller's executor unless explicitly bound
 * *Stop token propagation* — Forward-propagates cancellation signals
-* *xref:4.coroutines/4g.allocators.adoc#_halo_optimization[HALO] support* — Enables Heap Allocation eLision Optimization when possible
+* *xref:4.coroutines/4h.allocators.adoc#_halo_optimization[HALO] support* — Enables Heap Allocation eLision Optimization when possible
 
 == Declaring task Coroutines
 
@@ -48,7 +48,7 @@ Any function that returns cpp:task[task<T>] and contains coroutine keywords (`co
 
 [source,cpp]
 ----
-include::example$snippets/4a_tasks.cpp[tag=declaring]
+include::example$snippets/4b_tasks.cpp[tag=declaring]
 ----
 
 The syntax cpp:task[task<>] is equivalent to `task<void>`.
@@ -59,7 +59,7 @@ Use `co_return` to complete the coroutine and provide its result:
 
 [source,cpp]
 ----
-include::example$snippets/4a_tasks.cpp[tag=returning]
+include::example$snippets/4b_tasks.cpp[tag=returning]
 ----
 
 For cpp:task[task<void>], you can either use `co_return;` explicitly or let execution fall off the end of the function body.
@@ -73,14 +73,14 @@ cpp:io_task[io_task<Ts...>] names a task returning one of those results:
 
 [source,cpp]
 ----
-include::example$snippets/4a_tasks.cpp[tag=io_task]
+include::example$snippets/4b_tasks.cpp[tag=io_task]
 ----
 
 Because cpp:io_result[] is a `std::tuple`, the whole standard tuple API applies: structured bindings, `std::tie`, `std::apply`, `std::get`, `std::tuple_cat`, comparisons, and tuple assignment. The error code is the first element, so `auto [ec, n] = co_await s.read_some(buf);` destructures it directly, and `std::tie` rebinds into existing variables without introducing new ones. Always test the error code before reading a payload; a payload's meaning when it is set is defined by the operation that produced it.
 
 For cpp:io_result[io_result<>] -- no payload -- a `std::error_code` converts implicitly, so `co_return some_ec;` compiles. With payloads present you must supply the whole result, as `count_ready` shows.
 
-These two names are the vocabulary the stream concepts and the concurrent combinators are written in. xref:4.coroutines/4f.composition.adoc[Concurrent Composition] and xref:6.streams/6.intro.adoc[Stream Concepts] both assume them.
+These two names are the vocabulary the stream concepts and the concurrent combinators are written in. xref:4.coroutines/4g.composition.adoc[Concurrent Composition] and xref:6.streams/6.intro.adoc[Stream Concepts] both assume them.
 
 == Running a Task
 
@@ -88,7 +88,7 @@ A cpp:task[task] is lazy, so declaring one does not run it. To run a task to com
 
 [source,cpp]
 ----
-include::example$snippets/4a_tasks.cpp[tag=run]
+include::example$snippets/4b_tasks.cpp[tag=run]
 ----
 
 Here `add(2, 3)` runs on a cpp:thread_pool[] executor, and the completion handler receives the result, `5`. The call to `pool.join()` waits for the pooled work to finish before the result is read.
@@ -99,7 +99,7 @@ Tasks can await other tasks using `co_await`. This is the primary mechanism for 
 
 [source,cpp]
 ----
-include::example$snippets/4a_tasks.cpp[tag=awaiting]
+include::example$snippets/4b_tasks.cpp[tag=awaiting]
 ----
 
 When you `co_await` a task:
@@ -115,7 +115,7 @@ A critical property of cpp:task[task<T>] is *lazy execution*: creating a task do
 
 [source,cpp]
 ----
-include::example$snippets/4a_tasks.cpp[tag=lazy]
+include::example$snippets/4b_tasks.cpp[tag=lazy]
 ----
 
 *Output:*
@@ -135,7 +135,7 @@ When a task completes, control transfers directly to its continuation (the corou
 
 [source,cpp]
 ----
-include::example$snippets/4a_tasks.cpp[tag=chain]
+include::example$snippets/4b_tasks.cpp[tag=chain]
 ----
 
 Without symmetric transfer, each `co_await` would add a stack frame, potentially causing stack overflow with deep nesting. With symmetric transfer, `c` returning to `b` returning to `a` uses constant stack space regardless of depth.
@@ -144,7 +144,7 @@ This is implemented through the `await_suspend` returning a coroutine handle rat
 
 [source,cpp]
 ----
-include::example$snippets/4a_tasks.cpp[tag=final_suspend,indent=0]
+include::example$snippets/4b_tasks.cpp[tag=final_suspend,indent=0]
 ----
 
 == Move Semantics
@@ -153,7 +153,7 @@ Tasks are move-only. Copying a task would create aliasing problems where multipl
 
 [source,cpp]
 ----
-include::example$snippets/4a_tasks.cpp[tag=move_only]
+include::example$snippets/4b_tasks.cpp[tag=move_only]
 ----
 
 After moving, the source task becomes empty and must not be awaited.
@@ -164,7 +164,7 @@ Exceptions thrown inside a task are captured and rethrown when the task is await
 
 [source,cpp]
 ----
-include::example$snippets/4a_tasks.cpp[tag=exceptions]
+include::example$snippets/4b_tasks.cpp[tag=exceptions]
 ----
 
 The exception is stored in the promise when it occurs and rethrown in `await_resume` when the calling coroutine resumes.
