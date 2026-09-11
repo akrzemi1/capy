@@ -9,7 +9,7 @@ The lambda is defined and called in one expression -- the `()` after the closing
 
 [source,cpp]
 ----
-include::example$snippets/4h_lambda_captures.cpp[tag=dangling_capture]
+include::example$snippets/4i_lambda_captures.cpp[tag=dangling_capture]
 ----
 
 **This code has undefined behavior.** It may crash, corrupt memory, or appear to work until it doesn't.
@@ -36,7 +36,7 @@ The solution is to pass values as **function parameters** instead of **lambda ca
 
 [source,cpp]
 ----
-include::example$snippets/4h_lambda_captures.cpp[tag=iife_parameter]
+include::example$snippets/4i_lambda_captures.cpp[tag=iife_parameter]
 ----
 
 The parameter `s` is copied to the coroutine frame before the first suspension, so it remains valid for the coroutine's lifetime.
@@ -47,14 +47,14 @@ The parameter `s` is copied to the coroutine frame before the first suspension, 
 
 [source,cpp]
 ----
-include::example$snippets/4h_lambda_captures.cpp[tag=capture_this_broken]
+include::example$snippets/4i_lambda_captures.cpp[tag=capture_this_broken]
 ----
 
 === Correct: Using Parameters
 
 [source,cpp]
 ----
-include::example$snippets/4h_lambda_captures.cpp[tag=parameter_self_correct]
+include::example$snippets/4i_lambda_captures.cpp[tag=parameter_self_correct]
 ----
 
 == When Are Captures Safe?
@@ -63,7 +63,7 @@ Captures are only safe when the lambda object **outlives the coroutine**:
 
 [source,cpp]
 ----
-include::example$snippets/4h_lambda_captures.cpp[tag=stored_lambda_safe,indent=0]
+include::example$snippets/4i_lambda_captures.cpp[tag=stored_lambda_safe,indent=0]
 ----
 
 This pattern is rare. Most async code immediately invokes the lambda and discards it, making captures unsafe.
@@ -82,7 +82,7 @@ If the IIFE syntax feels awkward, use a named function instead:
 
 [source,cpp]
 ----
-include::example$snippets/4h_lambda_captures.cpp[tag=named_member_coroutine]
+include::example$snippets/4i_lambda_captures.cpp[tag=named_member_coroutine]
 ----
 
 Member function coroutines work correctly because `this` is an implicit parameter, not a capture. The compiler copies it to the coroutine frame.

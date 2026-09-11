@@ -16,7 +16,7 @@ cpp:run_async[] takes an executor, creates the necessary context, and starts the
 
 [source,cpp]
 ----
-include::example$programs/4b_launching_run_async.cpp[tag=full]
+include::example$programs/4c_launching_run_async.cpp[tag=full]
 ----
 
 === Two-Call Syntax
@@ -60,7 +60,7 @@ argument to the helper, which is before the helper's body runs.
 The two silent patterns produce no diagnostic at all: the task runs, on a
 coroutine frame that came from the wrong allocator.
 cpp:run_async_wrapper[] documents each pattern, and
-xref:4.coroutines/4g.allocators.adoc#two-call-rationale[Frame Allocators] carries the
+xref:4.coroutines/4h.allocators.adoc#two-call-rationale[Frame Allocators] carries the
 {cpp}17-evaluation-order rationale.
 
 Always use the two-call pattern in a single expression.
@@ -72,7 +72,7 @@ cpp:run_async[] accepts optional handlers for results and exceptions:
 
 [source,cpp]
 ----
-include::example$snippets/4b_launching.cpp[tag=handlers,indent=0]
+include::example$snippets/4c_launching.cpp[tag=handlers,indent=0]
 ----
 
 When no result handler is provided, the result is discarded. An exception
@@ -88,7 +88,7 @@ Inside a coroutine, use cpp:run[] to execute a child task on a different executo
 
 [source,cpp]
 ----
-include::example$snippets/4b_launching.cpp[tag=run_hop]
+include::example$snippets/4c_launching.cpp[tag=run_hop]
 ----
 
 === Executor Affinity
@@ -113,7 +113,7 @@ Since cpp:run_async[] is called from non-coroutine code, there is no caller toke
 
 [source,cpp]
 ----
-include::example$snippets/4b_launching.cpp[tag=inject_token,indent=0]
+include::example$snippets/4c_launching.cpp[tag=inject_token,indent=0]
 ----
 
 === Inheritance with run
@@ -122,14 +122,14 @@ cpp:run[] is called from within a coroutine, so it inherits the caller's stop to
 
 [source,cpp]
 ----
-include::example$snippets/4b_launching.cpp[tag=inherit_token,indent=0]
+include::example$snippets/4c_launching.cpp[tag=inherit_token,indent=0]
 ----
 
 To override with a different token, pass it explicitly:
 
 [source,cpp]
 ----
-include::example$snippets/4b_launching.cpp[tag=override_token,indent=0]
+include::example$snippets/4c_launching.cpp[tag=override_token,indent=0]
 ----
 
 == Handler Threading
@@ -138,6 +138,6 @@ Handlers passed to cpp:run_async[] are invoked on whatever thread the executor s
 
 [source,cpp]
 ----
-include::example$snippets/4b_launching.cpp[tag=handler_thread,indent=0]
+include::example$snippets/4c_launching.cpp[tag=handler_thread,indent=0]
 ----
 

@@ -7,7 +7,7 @@ Standard {cpp}20 coroutines define awaiters with this `await_suspend` signature:
 
 [source,cpp]
 ----
-include::example$snippets/4d_io_awaitable.cpp[tag=std_await_suspend,indent=0]
+include::example$snippets/4e_io_awaitable.cpp[tag=std_await_suspend,indent=0]
 ----
 
 The awaiter receives only a handle to the suspended coroutine. But real applications need more:
@@ -42,7 +42,7 @@ the execution environment:
 
 [source,cpp]
 ----
-include::example$snippets/4d_io_awaitable.cpp[tag=two_arg_await_suspend,indent=0]
+include::example$snippets/4e_io_awaitable.cpp[tag=two_arg_await_suspend,indent=0]
 ----
 
 This signature receives:
@@ -97,7 +97,7 @@ When you write `co_await child_task()` inside a cpp:task[task<T>]:
 
 [source,cpp]
 ----
-include::example$snippets/4d_io_awaitable.cpp[tag=context_flow,indent=0]
+include::example$snippets/4e_io_awaitable.cpp[tag=context_flow,indent=0]
 ----
 
 The child receives the parent's executor and stop token automatically.
@@ -124,7 +124,7 @@ To create a custom IoAwaitable:
 
 [source,cpp]
 ----
-include::example$snippets/4d_io_awaitable.cpp[tag=my_awaitable]
+include::example$snippets/4e_io_awaitable.cpp[tag=my_awaitable]
 ----
 
 The key points:
@@ -146,17 +146,17 @@ Post the resume through the executor instead of resuming inline:
 
 [source,cpp]
 ----
-include::example$snippets/4d_io_awaitable.cpp[tag=stoppable_awaitable]
+include::example$snippets/4e_io_awaitable.cpp[tag=stoppable_awaitable]
 ----
 
 The incorrect pattern—which compiles and appears to work but causes memory corruption—looks like this:
 
 [source,cpp]
 ----
-include::example$snippets/4d_io_awaitable.cpp[tag=wrong_stop_callback,indent=0]
+include::example$snippets/4e_io_awaitable.cpp[tag=wrong_stop_callback,indent=0]
 ----
 
-See xref:4.coroutines/4e.cancellation.adoc#stoppable-awaitables[Implementing Stoppable Awaitables] for a complete example.
+See xref:4.coroutines/4f.cancellation.adoc#stoppable-awaitables[Implementing Stoppable Awaitables] for a complete example.
 
 For a production implementation of this exact pattern, read the source of cpp:async_waker::wait_awaiter[]. It registers a stop callback that posts the resume through the executor, and arbitrates between wakeup and cancellation with a single atomic claim.
 
@@ -166,14 +166,14 @@ This awaitable produces a value and resumes the caller by posting its cpp:contin
 
 [source,cpp]
 ----
-include::example$snippets/4d_io_awaitable.cpp[tag=runnable_awaitable]
+include::example$snippets/4e_io_awaitable.cpp[tag=runnable_awaitable]
 ----
 
 To run that task from ordinary, non-coroutine code, hand it to cpp:run_async[] with an executor and a completion handler:
 
 [source,cpp]
 ----
-include::example$snippets/4d_io_awaitable.cpp[tag=run_awaitable,indent=0]
+include::example$snippets/4e_io_awaitable.cpp[tag=run_awaitable,indent=0]
 ----
 
 The task runs on the cpp:thread_pool[] executor. When the awaitable posts its continuation, the pool resumes the task, `await_resume` returns the value, and it arrives at the completion handler—here, `5`.
@@ -187,16 +187,16 @@ Capy rejects it at compile time:
 
 [source,cpp]
 ----
-include::example$snippets/4d_io_awaitable.cpp[tag=reject_plain,indent=0]
+include::example$snippets/4e_io_awaitable.cpp[tag=reject_plain,indent=0]
 ----
 
-This is intentional. A plain awaitable receives only the coroutine handle; it can resume the coroutine on any thread by calling `handle.resume()` directly. That silently breaks the xref:4.coroutines/4c.executors.adoc#the-same-executor-invariant[same-executor invariant]—the coroutine could wake on a foreign completion thread, leaving shared state you believed was strand-protected exposed to races. Rejecting such an awaitable at compile time prevents that. The constraint does not lock you in; it requires environment propagation to be explicit rather than silently dropped.
+This is intentional. A plain awaitable receives only the coroutine handle; it can resume the coroutine on any thread by calling `handle.resume()` directly. That silently breaks the xref:4.coroutines/4d.executors.adoc#the-same-executor-invariant[same-executor invariant]—the coroutine could wake on a foreign completion thread, leaving shared state you believed was strand-protected exposed to races. Rejecting such an awaitable at compile time prevents that. The constraint does not lock you in; it requires environment propagation to be explicit rather than silently dropped.
 
 The escape hatch is to wrap the foreign awaitable (or callback, or future) in a small cpp:IoAwaitable[]. That awaitable captures the executor and re-posts the resumption through it:
 
 [source,cpp]
 ----
-include::example$snippets/4d_io_awaitable.cpp[tag=foreign_bridge]
+include::example$snippets/4e_io_awaitable.cpp[tag=foreign_bridge]
 ----
 
 The single rule that makes any bridge correct: *on completion, post through `env->executor` instead of resuming the handle inline.*

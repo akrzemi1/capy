@@ -14,7 +14,7 @@ The obvious solution seems to be a boolean flag:
 
 [source,cpp]
 ----
-include::example$snippets/4e_cancellation.cpp[tag=naive_flag,indent=0]
+include::example$snippets/4f_cancellation.cpp[tag=naive_flag,indent=0]
 ----
 
 This approach has problems:
@@ -51,7 +51,7 @@ The *Observer Registration*. An RAII object that registers a callback to run whe
 
 [source,cpp]
 ----
-include::example$snippets/4e_cancellation.cpp[tag=observer_pattern,indent=0]
+include::example$snippets/4f_cancellation.cpp[tag=observer_pattern,indent=0]
 ----
 
 *Output:*
@@ -70,7 +70,7 @@ If a callback is registered after `request_stop()` was already called, the callb
 
 [source,cpp]
 ----
-include::example$snippets/4e_cancellation.cpp[tag=immediate_invocation,indent=0]
+include::example$snippets/4f_cancellation.cpp[tag=immediate_invocation,indent=0]
 ----
 
 This ensures observers never miss the signal, regardless of registration timing.
@@ -109,7 +109,7 @@ To "reset," create an entirely new `stop_source`:
 
 [source,cpp]
 ----
-include::example$snippets/4e_cancellation.cpp[tag=reset_workaround,indent=0]
+include::example$snippets/4f_cancellation.cpp[tag=reset_workaround,indent=0]
 ----
 
 This is manual and error-prone. Any code still holding the old token does not receive new signals.
@@ -141,7 +141,7 @@ Capy propagates stop tokens downward through `co_await`. When you await a task, 
 
 [source,cpp]
 ----
-include::example$snippets/4e_cancellation.cpp[tag=token_propagation,indent=0]
+include::example$snippets/4f_cancellation.cpp[tag=token_propagation,indent=0]
 ----
 
 === Accessing the Stop Token
@@ -150,7 +150,7 @@ Inside a task, use `co_await this_coro::stop_token` to access the current stop t
 
 [source,cpp]
 ----
-include::example$snippets/4e_cancellation.cpp[tag=access_stop_token,indent=0]
+include::example$snippets/4f_cancellation.cpp[tag=access_stop_token,indent=0]
 ----
 
 === Why Not `coroutine_handle::destroy()`?
@@ -170,7 +170,7 @@ The rule:
 
 [source,cpp]
 ----
-include::example$snippets/4e_cancellation.cpp[tag=check_token,indent=0]
+include::example$snippets/4f_cancellation.cpp[tag=check_token,indent=0]
 ----
 
 === Cleanup with RAII
@@ -179,7 +179,7 @@ RAII ensures resources are released on early exit:
 
 [source,cpp]
 ----
-include::example$snippets/4e_cancellation.cpp[tag=raii_cleanup,indent=0]
+include::example$snippets/4f_cancellation.cpp[tag=raii_cleanup,indent=0]
 ----
 
 === The canceled Convention
@@ -188,7 +188,7 @@ When cancellation causes an operation to fail, the conventional error code is cp
 
 [source,cpp]
 ----
-include::example$snippets/4e_cancellation.cpp[tag=canceled_convention,indent=0]
+include::example$snippets/4f_cancellation.cpp[tag=canceled_convention,indent=0]
 ----
 
 == OS Integration
@@ -208,7 +208,7 @@ A `std::stop_callback` fires synchronously on whatever thread calls `request_sto
 
 [source,cpp]
 ----
-include::example$snippets/4e_cancellation.cpp[tag=inline_resume_wrong,indent=0]
+include::example$snippets/4f_cancellation.cpp[tag=inline_resume_wrong,indent=0]
 ----
 
 When an external thread calls `request_stop()`, `h.resume()` executes the coroutine on that thread. The coroutine machinery sets the thread-local frame allocator to the executor's allocator—poisoning the calling thread's TLS. When the executor's pool destructs, the TLS pointer becomes dangling. The next coroutine allocation on that thread dereferences freed memory.
@@ -221,7 +221,7 @@ Post the coroutine handle through the executor instead of resuming it inline. Th
 
 [source,cpp]
 ----
-include::example$snippets/4e_cancellation.cpp[tag=stoppable_awaitable,indent=0]
+include::example$snippets/4f_cancellation.cpp[tag=stoppable_awaitable,indent=0]
 ----
 
 NOTE: Capy's built-in I/O awaitables (via Corosio) already use the post-back pattern internally. This guidance applies when writing your own custom awaitables.
@@ -236,7 +236,7 @@ of that race; a user thread supplies the clock:
 
 [source,cpp]
 ----
-include::example$snippets/4e_cancellation.cpp[tag=racing_deadline,indent=0]
+include::example$snippets/4f_cancellation.cpp[tag=racing_deadline,indent=0]
 ----
 
 cpp:when_any[]`(await_fetch(ch), deadline(waker))` returns as soon as either side
@@ -256,7 +256,7 @@ Connect UI cancellation to stop tokens. Pass the token through cpp:run_async[] s
 
 [source,cpp]
 ----
-include::example$snippets/4e_cancellation.cpp[tag=user_cancellation,indent=0]
+include::example$snippets/4f_cancellation.cpp[tag=user_cancellation,indent=0]
 ----
 
 === Graceful Shutdown
@@ -265,12 +265,12 @@ Cancel all pending work during shutdown:
 
 [source,cpp]
 ----
-include::example$snippets/4e_cancellation.cpp[tag=graceful_shutdown,indent=0]
+include::example$snippets/4f_cancellation.cpp[tag=graceful_shutdown,indent=0]
 ----
 
 === when_any Cancellation
 
-cpp:when_any[] uses stop tokens internally to cancel "losing" tasks when the first task completes. This is covered in xref:4.coroutines/4f.composition.adoc[Concurrent Composition].
+cpp:when_any[] uses stop tokens internally to cancel "losing" tasks when the first task completes. This is covered in xref:4.coroutines/4g.composition.adoc[Concurrent Composition].
 
 == The Standard Library Types
 
@@ -278,7 +278,7 @@ The stop token mechanism is part of the {cpp} standard library, not Capy:
 
 [source,cpp]
 ----
-include::example$snippets/4e_cancellation.cpp[tag=include_stop_token,indent=0]
+include::example$snippets/4f_cancellation.cpp[tag=include_stop_token,indent=0]
 ----
 
 Key types:

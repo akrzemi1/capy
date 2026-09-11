@@ -5,8 +5,8 @@ Awaiting a `std::execution` (P2300) sender from inside a Capy coroutine.
 
 == What This Example Shows
 
-* How to `co_await` a foreign awaitable that does not implement the xref:4.coroutines/4d.io-awaitable.adoc[IoAwaitable protocol]
-* How a bridge restores the xref:4.coroutines/4c.executors.adoc#the-same-executor-invariant[same-executor invariant] by posting the resumption through the caller's executor
+* How to `co_await` a foreign awaitable that does not implement the xref:4.coroutines/4e.io-awaitable.adoc[IoAwaitable protocol]
+* How a bridge restores the xref:4.coroutines/4d.executors.adoc#the-same-executor-invariant[same-executor invariant] by posting the resumption through the caller's executor
 * How a sender's value and error completion channels map onto cpp:io_result[]
 
 [NOTE]
@@ -46,5 +46,5 @@ result: 1764
 
 == See Also
 
-* xref:4.coroutines/4d.io-awaitable.adoc#bridging-a-foreign-awaitable[Bridging a Foreign Awaitable] — the general pattern and why there is no universal bridge
+* xref:4.coroutines/4e.io-awaitable.adoc#bridging-a-foreign-awaitable[Bridging a Foreign Awaitable] — the general pattern and why there is no universal bridge
 * xref:8.examples/8p.asio-use-capy.adoc[Calling Asio from a Capy Coroutine] — the same technique for Asio operations

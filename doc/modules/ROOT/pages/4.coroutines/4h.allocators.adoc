@@ -9,14 +9,14 @@ Pass an allocator to cpp:run_async[]:
 
 [source,cpp]
 ----
-include::example$snippets/4g_allocators.cpp[tag=run_async_pmr_alloc,indent=0]
+include::example$snippets/4h_allocators.cpp[tag=run_async_pmr_alloc,indent=0]
 ----
 
 Or pass a `memory_resource*` directly:
 
 [source,cpp]
 ----
-include::example$snippets/4g_allocators.cpp[tag=run_async_memory_resource,indent=0]
+include::example$snippets/4h_allocators.cpp[tag=run_async_memory_resource,indent=0]
 ----
 
 === Default Allocator
@@ -53,14 +53,14 @@ This `memory_resource` pools each freed block by size and counts how many alloca
 
 [source,cpp]
 ----
-include::example$snippets/4g_allocators.cpp[tag=recycling_observe_resource,indent=0]
+include::example$snippets/4h_allocators.cpp[tag=recycling_observe_resource,indent=0]
 ----
 
 Run the same task eight times through it, one run at a time:
 
 [source,cpp]
 ----
-include::example$snippets/4g_allocators.cpp[tag=recycling_observe,indent=0]
+include::example$snippets/4h_allocators.cpp[tag=recycling_observe,indent=0]
 ----
 
 The first run finds an empty pool and takes its coroutine frames from the heap. Each `pool.join()` returns those frames to the resource, so the next cpp:run_async[] call reuses them. Once the pool is warm, the upstream count stops climbing while the task keeps running -- the seven warm runs allocate nothing new. cpp:recycling_memory_resource[] does the same thing with size-class freelists and a lock-free thread-local cache.
@@ -77,7 +77,7 @@ Capy's cpp:task[task<T>] uses the `+[[clang::coro_await_elidable]]+` attribute (
 
 [source,cpp]
 ----
-include::example$snippets/4g_allocators.cpp[tag=task_elidable]
+include::example$snippets/4h_allocators.cpp[tag=task_elidable]
 ----
 
 === When HALO Applies
@@ -86,7 +86,7 @@ HALO is most effective for immediately-awaited tasks:
 
 [source,cpp]
 ----
-include::example$snippets/4g_allocators.cpp[tag=halo_patterns,indent=0]
+include::example$snippets/4h_allocators.cpp[tag=halo_patterns,indent=0]
 ----
 
 === Measuring HALO Effectiveness
@@ -109,7 +109,7 @@ When starting many short-lived tasks together, a monotonic buffer resource can b
 
 [source,cpp]
 ----
-include::example$snippets/4g_allocators.cpp[tag=batch_allocator]
+include::example$snippets/4h_allocators.cpp[tag=batch_allocator]
 ----
 
 === Scope Variables to Reduce Frame Size
@@ -120,18 +120,18 @@ Wrapping buffer usage in explicit braces can therefore cut frame size sharply:
 
 [source,cpp]
 ----
-include::example$snippets/4g_allocators.cpp[tag=frame_scope_bad]
+include::example$snippets/4h_allocators.cpp[tag=frame_scope_bad]
 
-include::example$snippets/4g_allocators.cpp[tag=frame_scope_good]
+include::example$snippets/4h_allocators.cpp[tag=frame_scope_good]
 ----
 
 The same technique lets Clang *overlap* two variables. When their lifetimes cannot coexist, both can occupy one frame offset:
 
 [source,cpp]
 ----
-include::example$snippets/4g_allocators.cpp[tag=pipeline_overlap_bad]
+include::example$snippets/4h_allocators.cpp[tag=pipeline_overlap_bad]
 
-include::example$snippets/4g_allocators.cpp[tag=pipeline_overlap_good]
+include::example$snippets/4h_allocators.cpp[tag=pipeline_overlap_good]
 ----
 
 In the second version, `read_buf` and `write_buf` never coexist, so they can share storage. This applies to any variables with non-overlapping lifetimes, not just arrays.
@@ -202,11 +202,11 @@ This is why cpp:run_async[] uses two-call syntax:
 
 [source,cpp]
 ----
-include::example$snippets/4g_allocators.cpp[tag=two_call,indent=0]
+include::example$snippets/4h_allocators.cpp[tag=two_call,indent=0]
 ----
 
 Three patterns split those two calls apart, and two of them do it without any
-diagnostic. xref:4.coroutines/4b.launching.adoc[Starting Coroutines] lists all
+diagnostic. xref:4.coroutines/4c.launching.adoc[Starting Coroutines] lists all
 three.
 
 === The Window
@@ -227,7 +227,7 @@ To prevent this, any code that calls `.resume()` on a coroutine handle must use 
 
 [source,cpp]
 ----
-include::example$snippets/4g_allocators.cpp[tag=safe_resume,indent=0]
+include::example$snippets/4h_allocators.cpp[tag=safe_resume,indent=0]
 ----
 
 cpp:safe_resume[] saves the current thread-local allocator, calls `h.resume()`, then restores the saved value. This makes TLS behave like a stack: nested resumes cannot spoil the outer value. All of Capy's built-in executors (cpp:thread_pool[], strands, cpp:test::blocking_context[blocking_context]) use `safe_resume` internally. Custom executor event loops must do the same -- see xref:8.examples/8n.custom-executor.adoc[Custom Executor] for an example.
@@ -255,7 +255,7 @@ Most users never need to allocate coroutine frames manually -- cpp:task[task<T>]
 
 [source,cpp]
 ----
-include::example$snippets/4g_allocators.cpp[tag=frame_alloc_mixin]
+include::example$snippets/4h_allocators.cpp[tag=frame_alloc_mixin]
 ----
 
 cpp:frame_alloc_mixin[] (in `<boost/capy/ex/frame_alloc_mixin.hpp>`) supplies `operator new` and `operator delete` that:
