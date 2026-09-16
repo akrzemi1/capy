@@ -28,22 +28,22 @@ namespace capy {
     @par !example example
 
 */
-struct const_buffer_archetype_
+struct const_buffer_archetype
 {
     /// Default construction is not permitted.
-    const_buffer_archetype_() = delete;
+    const_buffer_archetype() = delete;
 
     /** Construct a copy.
 
         @param other The archetype to copy.
     */
-    const_buffer_archetype_(const_buffer_archetype_ const& other) = default;
+    const_buffer_archetype(const_buffer_archetype const& other) = default;
 
     /** Construct by moving.
 
         @param other The archetype to move from.
     */
-    const_buffer_archetype_(const_buffer_archetype_&& other) = default;
+    const_buffer_archetype(const_buffer_archetype&& other) = default;
 
     /** Assign by copying.
 
@@ -51,7 +51,7 @@ struct const_buffer_archetype_
 
         @return A reference to `*this`.
     */
-    const_buffer_archetype_& operator=(const_buffer_archetype_ const& other) = default;
+    const_buffer_archetype& operator=(const_buffer_archetype const& other) = default;
 
     /** Assign by moving.
 
@@ -59,7 +59,7 @@ struct const_buffer_archetype_
 
         @return A reference to `*this`.
     */
-    const_buffer_archetype_& operator=(const_buffer_archetype_&& other) = default;
+    const_buffer_archetype& operator=(const_buffer_archetype&& other) = default;
 
     /** Convert to const_buffer.
 
@@ -67,14 +67,6 @@ struct const_buffer_archetype_
     */
     operator const_buffer() const noexcept { return {}; }
 };
-
-#ifdef __clang__
-/// Falls back to `const_buffer` itself: `const_buffer_archetype_` crashes clang.
-using const_buffer_archetype = const_buffer;
-#else
-/// Picks `const_buffer_archetype_` to keep default construction rejected.
-using const_buffer_archetype = const_buffer_archetype_;
-#endif
 
 /** Satisfies `MutableBufferSequence` without being default-constructible.
 
@@ -87,22 +79,22 @@ using const_buffer_archetype = const_buffer_archetype_;
     @par !example example
 
 */
-struct mutable_buffer_archetype_
+struct mutable_buffer_archetype
 {
     /// Default construction is not permitted.
-    mutable_buffer_archetype_() = delete;
+    mutable_buffer_archetype() = delete;
 
     /** Construct a copy.
 
         @param other The archetype to copy.
     */
-    mutable_buffer_archetype_(mutable_buffer_archetype_ const& other) = default;
+    mutable_buffer_archetype(mutable_buffer_archetype const& other) = default;
 
     /** Construct by moving.
 
         @param other The archetype to move from.
     */
-    mutable_buffer_archetype_(mutable_buffer_archetype_&& other) = default;
+    mutable_buffer_archetype(mutable_buffer_archetype&& other) = default;
 
     /** Assign by copying.
 
@@ -110,7 +102,7 @@ struct mutable_buffer_archetype_
 
         @return A reference to `*this`.
     */
-    mutable_buffer_archetype_& operator=(mutable_buffer_archetype_ const& other) = default;
+    mutable_buffer_archetype& operator=(mutable_buffer_archetype const& other) = default;
 
     /** Assign by moving.
 
@@ -118,7 +110,7 @@ struct mutable_buffer_archetype_
 
         @return A reference to `*this`.
     */
-    mutable_buffer_archetype_& operator=(mutable_buffer_archetype_&& other) = default;
+    mutable_buffer_archetype& operator=(mutable_buffer_archetype&& other) = default;
 
     /** Convert to mutable_buffer.
 
@@ -132,14 +124,6 @@ struct mutable_buffer_archetype_
     */
     operator const_buffer() const noexcept { return {}; }
 };
-
-#ifdef __clang__
-/// Falls back to `mutable_buffer` itself: `mutable_buffer_archetype_` crashes clang.
-using mutable_buffer_archetype = mutable_buffer;
-#else
-/// Picks `mutable_buffer_archetype_` to keep default construction rejected.
-using mutable_buffer_archetype = mutable_buffer_archetype_;
-#endif
 
 } // namespace capy
 } // namespace boost
