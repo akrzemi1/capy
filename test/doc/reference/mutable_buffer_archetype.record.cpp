@@ -7,7 +7,7 @@
 // Official repository: https://github.com/cppalliance/capy
 //
 
-// Reference examples for boost::capy::mutable_buffer_archetype_, injected into its documentation by
+// Reference examples for boost::capy::mutable_buffer_archetype, injected into its documentation by
 // doc/addons/extensions/reference-snippets.lua. Declared in:
 //   include/boost/capy/concept/buffer_archetype.hpp
 //
