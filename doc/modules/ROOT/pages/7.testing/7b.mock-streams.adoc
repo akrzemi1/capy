@@ -11,7 +11,7 @@
 :page-mode: how-to
 
 Concept-conforming test doubles for the partial-I/O concepts in
-xref:6.streams/6b.streams.adoc[Streams]. Use them to drive protocol
+xref:6.streams/6a.concepts.adoc[Stream Concepts]. Use them to drive protocol
 code without real network I/O.
 
 == read_stream

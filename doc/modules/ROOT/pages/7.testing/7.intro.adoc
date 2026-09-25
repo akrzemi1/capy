@@ -29,7 +29,7 @@ only difference is the type of the stream you pass in.
 
 * xref:7.testing/7b.mock-streams.adoc[Mock Streams] -- cpp:test::read_stream[read_stream],
   cpp:test::write_stream[write_stream], and cpp:test::stream[stream] (a connected pair) implement the partial-I/O
-  concepts from xref:6.streams/6b.streams.adoc[Streams]. Use them to test
+  concepts from xref:6.streams/6a.concepts.adoc[Stream Concepts]. Use them to test
   protocol logic that calls `read_some` and `write_some` without touching a
   socket.
 

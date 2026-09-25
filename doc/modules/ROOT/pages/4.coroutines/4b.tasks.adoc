@@ -59,7 +59,7 @@ Because cpp:io_result[] is a `std::tuple`, the whole standard tuple API applies:
 
 For cpp:io_result[io_result<>] -- no payload -- a `std::error_code` converts implicitly, so `co_return some_ec;` compiles. With payloads present you must supply the whole result, as `count_ready` shows.
 
-These two names are the vocabulary the stream concepts and the concurrent combinators are written in. xref:4.coroutines/4g.composition.adoc[Concurrent Composition] and xref:6.streams/6.intro.adoc[Stream Concepts] both assume them.
+These two names are the vocabulary the stream concepts and the concurrent combinators are written in. xref:4.coroutines/4g.composition.adoc[Concurrent Composition] and xref:6.streams/6.intro.adoc[Streams] both assume them.
 
 == Running a Task
 

@@ -50,4 +50,4 @@ include::example$programs/index_page_echo.cpp[tag=full]
 * xref:2.cpp20-coroutines/2a.foundations.adoc[{cpp}20 Coroutines Tutorial] — Learn coroutines from the ground up
 * xref:4.coroutines/4b.tasks.adoc[Coroutines in Capy] — Deep dive into cpp:task[task<T>] and the IoAwaitable protocol
 * xref:5.buffers/5a.buffers.adoc[Buffer Sequences] — Buffer types, sequences, system I/O, and the algorithms over them
-* xref:6.streams/6a.overview.adoc[Stream Concepts] — Understand the three stream concepts
+* xref:6.streams/6a.concepts.adoc[Stream Concepts] — Understand the three stream concepts

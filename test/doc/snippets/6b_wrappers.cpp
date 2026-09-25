@@ -8,7 +8,7 @@
 // Official repository: https://github.com/cppalliance/capy
 //
 
-// Compiled fragments shown in pages/6.streams/6a.overview.adoc.
+// Compiled fragments shown in pages/6.streams/6b.wrappers.adoc.
 
 #include "../doc_warnings.hpp"
 
@@ -32,6 +32,12 @@ namespace capy = boost::capy;
 
 namespace {
 
+// tag::reading_template[]  
+capy::task<> algo1(capy::ReadStream auto& stream); // <1>
+// end::reading_template[] 
+// tag::reading_function[]  
+capy::task<> algo2(capy::any_read_stream& stream); // <2>
+// end::reading_function[] 
 
 capy::task<> partial_read(capy::test::stream& stream)
 {
@@ -79,7 +85,16 @@ capy::task<> echo(capy::any_stream& stream)
 }
 // end::any_stream_echo[]
 
-struct overview_test
+struct MyReadStream
+{
+    MyReadStream() = default;
+    MyReadStream(MyReadStream&&) = default;
+    capy::io_task<std::size_t> read_some(auto&&) { co_return {std::error_code{}, 0}; }
+};
+
+MyReadStream makeMyStream() { return {}; } 
+
+struct wrappers_test
 {
     void
     testPartialReadWrite()
@@ -89,6 +104,16 @@ struct overview_test
         capy::test::run_blocking()(partial_read(a));
         capy::test::run_blocking()(partial_write(a));
         BOOST_TEST(b.data() == "hello");
+    }
+
+    void
+    testCreatingWrappers()
+    {
+        // tag::ownership[]
+        MyReadStream s = makeMyStream();
+        capy::any_read_stream ws1(&s);             // <1>
+        capy::any_read_stream ws2(makeMyStream()); // <2>
+        // end::ownership[]
     }
 
     void
@@ -135,4 +160,4 @@ struct overview_test
 
 } // namespace
 
-TEST_SUITE(overview_test, "boost.capy.doc.6a_overview");
+TEST_SUITE(wrappers_test, "boost.capy.doc.6b_wrappers");
