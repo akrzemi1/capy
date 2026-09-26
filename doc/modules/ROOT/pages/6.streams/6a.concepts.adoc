@@ -1,0 +1,123 @@
+//
+// Copyright (c) 2026 Andrzej Krzemieński (akrzemi1@gmail.com)
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
+// Official repository: https://github.com/cppalliance/capy
+//
+
+= Stream Concepts
+:page-mode: explanation
+
+== ReadStream
+
+In a read stream, data keeps coming in chunks. You keep awaiting ever-new 
+chunks of data. As soon as one arrives into the buffer you provided,
+your coroutine is resumed, you can process that chunk, and await the
+next one. This single-chunk read is reflected by operation `read_some`:
+
+[source,cpp]
+----
+include::example$snippets/6a_concepts.cpp[tag=read_some_demo]
+----
+
+You provide a buffer to fill and await the result. The coroutine is resumed
+as soon as the stream has something to report to you: 
+ 
+  * either read bytes,
+  * or a non-nominal status (xref:A.specification-methods/Ac.contingencies.adoc[__contingency__]),
+  * or both.
+
+The two returned pieces of data inform you about two things:
+
+ * `n` -- tells you how many bytes were read into the buffer.
+ * `ec` -- tells you about the status, `bool(ec) == false` being the nominal status.
+
+When no contingency is reported (`!ec`), then `n > 0`. That is, `read_some` does not resume 
+a coroutine unless it really has something to communicate. When `n` is the size of the buffer
+(full buffer fill), then `bool(ec)` is `false` (no contingency). If a contingency occurred after a 
+full buffer read, it will be reported in the subsequent call to `read_some`.footnote:1[The 
+only exception to these rules is if you provide a buffer of zero size.]
+
+While many values of `ec` can be returned, Capy allows you to distinguish 
+the following conditions, defined in enumeration cpp:cond[], relevant to stream processing.
+
+[cols="1,3"]
+|====
+| name | meaning
+
+| `eof` | The read stream transmitted all the bytes that it intended. Nothing left to read.
+| `canceled` | Your own program requested the stream to stop reading, and it obeyed.
+| `stream_truncated` | The transport closed without the secure handshake's goodbye message, 
+                       which might indicate a truncation attack.
+| `timeout` | The read operation exceeded the time allowed for the operation.
+|====
+
+[source,cpp]
+----
+include::example$snippets/6a_concepts.cpp[tag=conditions]
+----
+<1> Check if the value of `ec` matches to condition `cond::eof`.
+
+Due to the chunked nature of the reads from stream, a typical interaction with 
+a read stream involves an iteration:
+
+[source,cpp]
+----
+include::example$snippets/6a_concepts.cpp[tag=read_some_pattern]
+----
+
+Such iteration is hidden between generic algorithms cpp:read[] and cpp:read_at_least[].
+The contract of a read stream is represented by concept cpp:ReadStream[].
+
+
+
+== WriteStream
+
+When you need to send your data some place, you use a write stream. 
+This operation also happens in chunks. Your coroutine is being resumed after each
+written chunk. This is implemented with operation `write_some`:
+
+[source,cpp]
+----
+include::example$snippets/6a_concepts.cpp[tag=write_some_demo]
+----
+
+You pass the bytes to write in `buffer`. Upon resume, the write stream has written 
+_a chunk_ (but not necessarily all) of these bytes. The operation result is:
+
+ * `ec` -- status of the operation (or stream, depending on the value of `ec`),
+ * `n` -- the number of bytes written. 
+
+Any value where `bool(ec) == true` indicates a contingency (such as broken connection).
+
+When no contingency is reported (`!ec`), then `n > 0`. That is, `write_some` does not resume 
+a coroutine, unless it has something to communicate. When `n` is the size of the buffer
+(full buffer fill), then `bool(ec)` is `false` (no contingency). If a contingency ocurred after a 
+full buffer write, it will be reported in the subsequent call to `write_some`.footnote:1[]
+
+Note that for a common case where `n < buffer_size(buffer)` you need to rearrange the buffer, 
+so that the first `n` bytes is removed, before requesting another chunked write. Unlike with the read case,
+writing a long content, which does not fit into a single buffer sequence, requires a nested loop.
+This is why in the xref:index.adoc[Introduction] section the "echo" example reads:
+
+[source,cpp]
+----
+include::example$snippets/6a_concepts.cpp[tag=write_loop]
+----
+<1> The outer loop: one iteration per one chunked read into the buffer.
+<2> The single chunked read via member function `read_some`.
+<3> Algorithm cpp:write[] with embedded inner loop that keeps awaiting
+    member function `write_some` until the buffer is fully written from.
+ 
+Capy's generic algorithms involving write streams are cpp:write[] and cpp:write_at_least[].
+The contract of a write stream is represented by concept cpp:WriteStream[].
+
+
+== Stream
+
+A type that models both cpp:ReadStream[] and cpp:WriteStream[] is a cpp:Stream[].
+A TCP socket is the common case: one object carries traffic in both directions.
+Also, an example above clearly uses such a "duplex" cpp:Stream[].
+

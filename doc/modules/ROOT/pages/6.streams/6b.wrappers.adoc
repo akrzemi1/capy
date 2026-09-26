@@ -1,0 +1,66 @@
+//
+// Copyright (c) 2026 Andrzej Krzemieński (akrzemi1@gmail.com)
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
+// Official repository: https://github.com/cppalliance/capy
+//
+
+= Type-Erased Wrappers
+:page-mode: explanation
+
+cpp:any_read_stream[] is a movable, type-erased wrapper for any type modeling cpp:ReadStream[].
+It can be owning or non-owning: you decide upon construction. It models cpp:ReadStream[] itself.
+
+It offers you a possibility to write an algorithm that works with any read stream and 
+that is not a function template:
+
+[source,cpp]
+----
+include::example$snippets/6b_wrappers.cpp[tag=reading_template,indent=0]
+
+include::example$snippets/6b_wrappers.cpp[tag=reading_function,indent=0]
+----
+<1> Taking any read stream via a template argument.
+<2> Taking any read stream via a type-erased wrapper.
+
+The type-erased wrapper comes at a slight run-time cost resulting from
+indirect calls and a possible allocator use. In return, you get:
+
+ 1. Not having to ship the implementation of your functions in header files.
+ 2. Much improved compile times.
+ 3. Being able to select the read stream implementation at runtime.
+
+Note that this runtime cost is dwarfed by the cost of I/O itself. 
+
+The allocation strategy used by the wrapper is very efficient. There is only one
+when the wrapper is created. The same allocation is reused when an awaitable 
+(also type-erased) is created by the call to `read_some`.
+
+You decide whether the wrapper will exclusively own the stream, or if it will
+only be a reference, by selecting the appropriate constructor 
+
+[source,cpp]
+----
+include::example$snippets/6b_wrappers.cpp[tag=ownership,indent=0]
+----
+<1> Pointer constructor -- You have to make sure the stream outlives the wrapper.
+<2> Rvalue reference constructor -- The wrapper will manage the stream's lifetime.
+
+There are analogous wrappers for cpp:WriteStream[] and cpp:Stream[] concepts.
+This is shown in the table.
+
+[cols="1,1"]
+|===
+| Concept | Type-erased wrapper 
+
+| cpp:ReadStream[]
+| cpp:any_read_stream[]
+
+| cpp:WriteStream[]
+| cpp:any_write_stream[]
+
+| cpp:Stream[]
+| cpp:any_stream[]
+|===

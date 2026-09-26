@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2025 Vinnie Falco (vinnie.falco@gmail.com)
+// Copyright (c) 2026 Andrzej Krzemieński (akrzemi1@gmail.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -7,18 +7,20 @@
 // Official repository: https://github.com/cppalliance/capy
 //
 
-= Stream Concepts
+= Streams
 :page-mode: explanation
 
-Capy organizes data flow around three concepts: cpp:ReadStream[], cpp:WriteStream[], and cpp:Stream[]. _Partial_ operations and _complete_ operations are fundamentally different things, and conflating them leads to bugs.
+Capy comes with an API for byte transport in the form of _streams_.
+Any concrete transport mechanism is expected to use this API in order to
+interoperate with Capy-based programs. While such concrete mechanisms 
+-- like IOCP or io_uring -- are part of a separate library (Corosio), 
+Capy defines the API. 
 
-A socket might give you 47 bytes when you asked for 1024. That is not an error--it is the nature of the hardware. Capy's stream concepts cover the partial case directly: `read_some` and `write_some` transfer whatever the hardware allows. The complete case is a composed algorithm, not a separate concept. cpp:read[], cpp:write[], cpp:read_at_least[], and cpp:write_at_least[] loop over `read_some` or `write_some` until the buffer is satisfied or an error occurs.
+The high-level idea is that data is read and written in chunks, and
+you keep awaiting individual chunk transport in a loop. 
 
-== What This Section Covers
+The streams API consists of
 
-* xref:6.streams/6a.overview.adoc[Overview] -- What cpp:ReadStream[], cpp:WriteStream[], and
-  cpp:Stream[] model, and why partial I/O needs its own concepts.
-* xref:6.streams/6b.streams.adoc[Streams (Partial I/O)] -- The cpp:ReadStream[] and
-  cpp:WriteStream[] concepts, and the type-erased `any_stream` wrappers.
-* xref:6.streams/6f.isolation.adoc[Physical Isolation] -- Type erasure as a compilation
-  firewall for transport-independent, testable I/O code.
+ * xref:6.streams/6a.concepts.adoc[stream concepts],
+ * algorithms implementing loops on top of stream concepts,
+ * xref:6.streams/6b.wrappers.adoc[type-erased wrappers] for streams.
