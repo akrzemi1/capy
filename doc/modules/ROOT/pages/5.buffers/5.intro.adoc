@@ -1,0 +1,33 @@
+//
+// Copyright (c) 2026 Andrzej Krzemieński (akrzemi1@gmail.com)
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
+// Official repository: https://github.com/cppalliance/capy
+//
+
+= Buffer Sequences
+:page-mode: explanation
+
+Every I/O operation is ultimately about transferring bytes. A write moves the
+bytes produced by your program into the outside world; a read moves bytes from
+the outside world into your program. Buffer sequences describe the storage
+within your program that those bytes are written from and read into. They are
+designed with the following criteria in mind:
+
+ * They should be compatible with data types used by native I/O systems.
+ * They should enable fast transport (contiguous storage).
+ * They should be easy to use from within your program.
+
+== What This Section Covers
+
+* xref:5.buffers/5a.unit-buffers.adoc[Unit Buffers] -- cpp:const_buffer[] and
+  cpp:mutable_buffer[], the two handle types that refer to one contiguous
+  region of storage that you own.
+* xref:5.buffers/5b.combined-buffers.adoc[Combined Buffers] -- the concepts
+  that describe sequences of those handles.
+* xref:5.buffers/5c.system-io-integration.adoc[System I/O Integration] --
+  how a sequence maps onto the structures that native I/O systems expect.
+* xref:5.buffers/5d.buffer-algo.adoc[Buffer Algorithms] -- the algorithms
+  that measure, copy, and consume buffers.

@@ -1,0 +1,176 @@
+//
+// Copyright (c) 2026 Andrzej Krzemieński (akrzemi1@gmail.com)
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
+// Official repository: https://github.com/cppalliance/capy
+//
+
+= Unit Buffers
+:page-mode: explanation
+
+The most efficient way to provide storage for bytes is a contiguous region: an array. 
+While it is not always possible to efficiently compose a full message in a single contiguous storage,
+it is certainly a good default. Capy offers two types for this purpose:
+
+ * cpp:const_buffer[] -- a handle to a contiguous sequence of bytes. I/O operations will never modify these bytes.
+ * cpp:mutable_buffer[] -- a handle to a contiguous storage for bytes; I/O operations will fill it.
+
+Both types are present in header `<boost/capy/buffers.hpp>`. 
+
+
+== Passing Handles
+
+Objects of type cpp:const_buffer[] and cpp:mutable_buffer[] store a 
+pointer to the beginning of a memory region and the size of the region measured in bytes.
+This is reflected in how they are constructed and how they are copied.
+
+[source,cpp]
+----
+include::example$snippets/5a_unit_buffers.cpp[tag=construct,indent=0]
+----
+<1> You need to pass the pointer to the beginning of the region and its size.
+<2> Copies the pointer and the size.
+
+As operations take the buffers by value, or store them by value as data members,
+only the handle is copied, while the location of the bytes does not change.
+
+// Figures are sized in rem so they track the reader's font size. The UI
+// bundle offers no hook for page CSS, so the rule ships with the page.
+++++
+<style>
+.doc .imageblock.scaled > .content > img {
+  width: 30rem;
+  max-width: 100%;
+  height: auto;
+}
+</style>
+++++
+[.scaled]
+image::unit_buffer.svg[]
+
+Unlike cpp:span[std::span], a single buffer type can represent storage for different trivially-copyable types:
+
+[source,cpp]
+----
+include::example$snippets/5a_unit_buffers.cpp[tag=types,indent=0]
+----
+<1> C array of `char` is fine.
+<2> Array of cpp:byte[std::byte] is fine.
+<3> Vector of `int` is fine: the integers will be interpreted as bytes during transmission.
+
+
+== Lifetime Management
+
+The contract for read and write operations in Capy is:
+
+ * The user manages the lifetime of the byte storage.
+ * I/O operations receive a handle to the storage and assume that it will be available for the entire duration
+   of the asynchronous operations.
+
+[source,cpp]
+----
+include::example$snippets/5a_unit_buffers.cpp[tag=good_management,indent=0]
+----
+<1> OK: The read will be performed at unpredictable time, but because afterwards
+    the coroutine needs to be resumed, its frame (containing the array) is guaranteed
+    to outlive the read operation. 
+
+[source,cpp]
+----
+include::example$snippets/5a_unit_buffers.cpp[tag=bad_management,indent=0]
+----
+<1> Bug: the awaitable rather than `co_await`-ed is returned to be used later.
+    At that later time the array will no longer be alive. 
+
+
+== Mutable versus Const Buffers
+
+cpp:mutable_buffer[] represents the storage for bytes, intended to be written. The value
+of the bytes is irrelevant, because they will be overwritten. In fact, they may have _indeterminate value_.
+
+cpp:const_buffer[] represents bytes to be read. It is not only storage, it is also values.
+
+[source,cpp]
+----
+include::example$snippets/5a_unit_buffers.cpp[tag=wrong_buffer,indent=0]
+----
+<1> Compiler error: passing cpp:const_buffer[] but the read operation needs to mutate its contents.
+
+
+A cpp:mutable_buffer[] is convertible to cpp:const_buffer[]. However, you should be very careful
+about this, as this conversion allows using pure storage, possibly with indeterminate byte values,
+in functions that need to read the byte values: 
+
+[source,cpp]
+----
+include::example$snippets/5a_unit_buffers.cpp[tag=buffer_conversion,indent=0]
+----
+<1> The storage starts with indeterminate byte values (intended to be overwritten).
+<2> Bug: will read indeterminate byte values, which is undefined behavior.
+
+
+== Buffer Processing interface
+
+Algorithms operating on buffers use the following interface provided by both
+cpp:const_buffer[] and cpp:mutable_buffer[].
+
+[source,cpp]
+----
+include::example$snippets/5a_unit_buffers.cpp[tag=buffer_interface,indent=0]
+----
+<1> The size of the buffer measured in bytes.
+<2> Pointer to the first byte of the buffer. It is `const` for cpp:const_buffer[].
+<3> Shrink to represent a subrange of the original by omitting the initial `len` bytes.
+
+
+== make_buffer
+
+There is a convenience factory function cpp:make_buffer[] that can create either 
+a cpp:const_buffer[] or cpp:mutable_buffer[] from your type, as long as it is recognized
+as a contiguous storage of trivially-copyable types.
+
+
+[source,cpp]
+----
+include::example$snippets/5a_unit_buffers.cpp[tag=make_buffer_hpp,indent=0]
+----
+
+[source,cpp]
+----
+include::example$snippets/5a_unit_buffers.cpp[tag=buf_from_carray,indent=0]
+----
+
+[source,cpp]
+----
+include::example$snippets/5a_unit_buffers.cpp[tag=buf_from_std_array,indent=0]
+----
+
+[source,cpp]
+----
+include::example$snippets/5a_unit_buffers.cpp[tag=buf_from_vec,indent=0]
+----
+
+[source,cpp]
+----
+include::example$snippets/5a_unit_buffers.cpp[tag=buf_from_str,indent=0]
+----
+
+[source,cpp]
+----
+include::example$snippets/5a_unit_buffers.cpp[tag=buf_from_strv,indent=0]
+----
+
+[source,cpp]
+----
+include::example$snippets/5a_unit_buffers.cpp[tag=buf_from_span,indent=0]
+----
+
+[source,cpp]
+----
+include::example$snippets/5a_unit_buffers.cpp[tag=buf_from_nested,indent=0]
+----
+
+The `const`-ness of `.data()` on the source type determines if the factory produces
+cpp:const_buffer[] or cpp:mutable_buffer[].

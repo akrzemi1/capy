@@ -8,26 +8,52 @@
 // Official repository: https://github.com/cppalliance/capy
 //
 
-// Compiled fragments shown in pages/5.buffers/5e.algorithms.adoc.
+// Compiled fragments shown in pages/5.buffers/5d.buffer-algo.adoc.
+//
+//
 
 #include "../doc_warnings.hpp"
 
+// tag::include_buffers[]
 #include <boost/capy/buffers.hpp>
-#include <boost/capy/buffers/buffer_copy.hpp>
-#include <boost/capy/buffers/consuming_buffers.hpp>
+// end::include_buffers[]
+// tag::make_buffer_include[]
 #include <boost/capy/buffers/make_buffer.hpp>
+// end::make_buffer_include[]
+// tag::buffer_slice_include[]
+#include <boost/capy/buffers/buffer_slice.hpp>
+// end::buffer_slice_include[]
+// tag::consuming_buffers_include[]
+#include <boost/capy/buffers/consuming_buffers.hpp>
+// end::consuming_buffers_include[]
+
+#include <boost/capy/buffers/buffer_copy.hpp>
 #include <boost/capy/concept/read_stream.hpp>
 #include <boost/capy/concept/write_stream.hpp>
+#include <boost/capy/io_task.hpp>
 #include <boost/capy/task.hpp>
 #include <boost/capy/test/run_blocking.hpp>
 #include <boost/capy/test/stream.hpp>
 #include <boost/capy/write.hpp>
 
+#include <algorithm>
 #include <array>
+#include <cstddef>
 #include <cstring>
+#include <span>
 #include <string>
 #include <string_view>
 #include <vector>
+
+#if __has_include(<sys/uio.h>)
+#include <sys/uio.h>
+#include <unistd.h>
+#define BOOST_CAPY_DOC_HAS_POSIX_IO
+#endif
+
+#if __has_include(<liburing.h>)
+#include <liburing.h>
+#endif
 
 #if __has_include(<sys/mman.h>)
 #include <sys/mman.h>
@@ -40,6 +66,10 @@ namespace capy = boost::capy;
 namespace {
 
 using namespace std::string_view_literals;
+
+// ---------------------------------------------------------------------
+// Buffer algorithms
+// ---------------------------------------------------------------------
 
 // tag::read_loop[]
 template<capy::ReadStream Stream, capy::MutableBufferSequence Buffers>
@@ -102,7 +132,7 @@ zero_copy_write(capy::test::stream& stream)
     std::string header = build_header();
     std::vector<char> body = load_body();
 
-    // No copying—header and body are written directly
+    // No copyingâ€”header and body are written directly
     std::array buffers = {capy::make_buffer(header), capy::make_buffer(body)};
     co_await capy::write(stream, buffers);
     // end::zero_copy[]
@@ -196,7 +226,7 @@ public:
     auto begin() const { return chunk_iterator(chunks_.begin()); }
     auto end() const { return chunk_iterator(chunks_.end()); }
 };
-// Satisfies ConstBufferSequence—works with all algorithms
+// Satisfies ConstBufferSequenceâ€”works with all algorithms
 // end::custom_sequence[]
 
 static_assert(capy::ConstBufferSequence<chunked_buffer_sequence>);
@@ -218,7 +248,7 @@ write_full_driver(
     put = co_await write_full(wr, bufs);
 }
 
-struct algorithms_test
+struct buffer_algo_test
 {
     void
     testBufferSize()
@@ -365,4 +395,4 @@ struct algorithms_test
 
 } // namespace
 
-TEST_SUITE(algorithms_test, "boost.capy.doc.5e_algorithms");
+TEST_SUITE(buffer_algo_test, "boost.capy.doc.5d_buffer_algo");
