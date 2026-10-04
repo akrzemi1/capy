@@ -8,7 +8,7 @@
 // Official repository: https://github.com/cppalliance/capy
 //
 
-// Compiled fragments shown in pages/5.buffers/5d.system-io.adoc. The
+// Compiled fragments shown in pages/5.buffers/5c.system-io-integration.adoc. The
 // OS-level fragments compile only where the platform headers exist;
 // guards keep this TU portable while the tags stay extractable.
 
@@ -17,15 +17,33 @@
 // tag::include_buffers[]
 #include <boost/capy/buffers.hpp>
 // end::include_buffers[]
-
+// tag::make_buffer_include[]
 #include <boost/capy/buffers/make_buffer.hpp>
+// end::make_buffer_include[]
+// tag::buffer_slice_include[]
+#include <boost/capy/buffers/buffer_slice.hpp>
+// end::buffer_slice_include[]
+// tag::consuming_buffers_include[]
+#include <boost/capy/buffers/consuming_buffers.hpp>
+// end::consuming_buffers_include[]
+
+#include <boost/capy/buffers/buffer_copy.hpp>
+#include <boost/capy/concept/read_stream.hpp>
+#include <boost/capy/concept/write_stream.hpp>
 #include <boost/capy/io_task.hpp>
 #include <boost/capy/task.hpp>
+#include <boost/capy/test/run_blocking.hpp>
 #include <boost/capy/test/stream.hpp>
 #include <boost/capy/write.hpp>
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
+#include <cstring>
+#include <span>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #if __has_include(<sys/uio.h>)
 #include <sys/uio.h>
@@ -37,9 +55,21 @@
 #include <liburing.h>
 #endif
 
+#if __has_include(<sys/mman.h>)
+#include <sys/mman.h>
+#endif
+
+#include "test_suite.hpp"
+
 namespace capy = boost::capy;
 
 namespace {
+
+using namespace std::string_view_literals;
+
+// ---------------------------------------------------------------------
+// System I/O integration
+// ---------------------------------------------------------------------
 
 // tag::write_some_signature[]
 template<capy::ConstBufferSequence Buffers>
