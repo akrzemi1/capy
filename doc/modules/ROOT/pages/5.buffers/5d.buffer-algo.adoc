@@ -71,7 +71,7 @@ The algorithm fills target buffers in order, reading from source buffers as need
 
 == Partial Transfer Loops
 
-Real transfers move some of the bytes, not all of them. Drive the loop with a cpp:consuming_buffers[] cursor, described on xref:5.buffers/5b.combined-buffers.adoc#_consuming_buffers[consuming_buffers].
+Real transfers move some of the bytes, not all of them. Drive the loop with a cpp:consuming_buffers[] cursor, described on xref:5.buffers/5b.composite-buffers.adoc#_consuming_buffers[consuming_buffers].
 
 [source,cpp]
 ----

@@ -7,7 +7,7 @@
 // Official repository: https://github.com/cppalliance/capy
 //
 
-= Unit Buffers
+= Contiguous Buffers
 :page-mode: explanation
 
 The most efficient way to provide storage for bytes is a contiguous region: an array. 
@@ -28,7 +28,7 @@ This is reflected in how they are constructed and how they are copied.
 
 [source,cpp]
 ----
-include::example$snippets/5a_unit_buffers.cpp[tag=construct,indent=0]
+include::example$snippets/5a_contiguous_buffers.cpp[tag=construct,indent=0]
 ----
 <1> You need to pass the pointer to the beginning of the region and its size.
 <2> Copies the pointer and the size.
@@ -54,7 +54,7 @@ Unlike cpp:span[std::span], a single buffer type can represent storage for diffe
 
 [source,cpp]
 ----
-include::example$snippets/5a_unit_buffers.cpp[tag=types,indent=0]
+include::example$snippets/5a_contiguous_buffers.cpp[tag=types,indent=0]
 ----
 <1> C array of `char` is fine.
 <2> Array of cpp:byte[std::byte] is fine.
@@ -71,7 +71,7 @@ The contract for read and write operations in Capy is:
 
 [source,cpp]
 ----
-include::example$snippets/5a_unit_buffers.cpp[tag=good_management,indent=0]
+include::example$snippets/5a_contiguous_buffers.cpp[tag=good_management,indent=0]
 ----
 <1> OK: The read will be performed at unpredictable time, but because afterwards
     the coroutine needs to be resumed, its frame (containing the array) is guaranteed
@@ -79,7 +79,7 @@ include::example$snippets/5a_unit_buffers.cpp[tag=good_management,indent=0]
 
 [source,cpp]
 ----
-include::example$snippets/5a_unit_buffers.cpp[tag=bad_management,indent=0]
+include::example$snippets/5a_contiguous_buffers.cpp[tag=bad_management,indent=0]
 ----
 <1> Bug: the awaitable rather than `co_await`-ed is returned to be used later.
     At that later time the array will no longer be alive. 
@@ -94,7 +94,7 @@ cpp:const_buffer[] represents bytes to be read. It is not only storage, it is al
 
 [source,cpp]
 ----
-include::example$snippets/5a_unit_buffers.cpp[tag=wrong_buffer,indent=0]
+include::example$snippets/5a_contiguous_buffers.cpp[tag=wrong_buffer,indent=0]
 ----
 <1> Compiler error: passing cpp:const_buffer[] but the read operation needs to mutate its contents.
 
@@ -105,7 +105,7 @@ in functions that need to read the byte values:
 
 [source,cpp]
 ----
-include::example$snippets/5a_unit_buffers.cpp[tag=buffer_conversion,indent=0]
+include::example$snippets/5a_contiguous_buffers.cpp[tag=buffer_conversion,indent=0]
 ----
 <1> The storage starts with indeterminate byte values (intended to be overwritten).
 <2> Bug: will read indeterminate byte values, which is undefined behavior.
@@ -118,7 +118,7 @@ cpp:const_buffer[] and cpp:mutable_buffer[].
 
 [source,cpp]
 ----
-include::example$snippets/5a_unit_buffers.cpp[tag=buffer_interface,indent=0]
+include::example$snippets/5a_contiguous_buffers.cpp[tag=buffer_interface,indent=0]
 ----
 <1> The size of the buffer measured in bytes.
 <2> Pointer to the first byte of the buffer. It is `const` for cpp:const_buffer[].
@@ -134,42 +134,42 @@ as a contiguous storage of trivially-copyable types.
 
 [source,cpp]
 ----
-include::example$snippets/5a_unit_buffers.cpp[tag=make_buffer_hpp,indent=0]
+include::example$snippets/5a_contiguous_buffers.cpp[tag=make_buffer_hpp,indent=0]
 ----
 
 [source,cpp]
 ----
-include::example$snippets/5a_unit_buffers.cpp[tag=buf_from_carray,indent=0]
+include::example$snippets/5a_contiguous_buffers.cpp[tag=buf_from_carray,indent=0]
 ----
 
 [source,cpp]
 ----
-include::example$snippets/5a_unit_buffers.cpp[tag=buf_from_std_array,indent=0]
+include::example$snippets/5a_contiguous_buffers.cpp[tag=buf_from_std_array,indent=0]
 ----
 
 [source,cpp]
 ----
-include::example$snippets/5a_unit_buffers.cpp[tag=buf_from_vec,indent=0]
+include::example$snippets/5a_contiguous_buffers.cpp[tag=buf_from_vec,indent=0]
 ----
 
 [source,cpp]
 ----
-include::example$snippets/5a_unit_buffers.cpp[tag=buf_from_str,indent=0]
+include::example$snippets/5a_contiguous_buffers.cpp[tag=buf_from_str,indent=0]
 ----
 
 [source,cpp]
 ----
-include::example$snippets/5a_unit_buffers.cpp[tag=buf_from_strv,indent=0]
+include::example$snippets/5a_contiguous_buffers.cpp[tag=buf_from_strv,indent=0]
 ----
 
 [source,cpp]
 ----
-include::example$snippets/5a_unit_buffers.cpp[tag=buf_from_span,indent=0]
+include::example$snippets/5a_contiguous_buffers.cpp[tag=buf_from_span,indent=0]
 ----
 
 [source,cpp]
 ----
-include::example$snippets/5a_unit_buffers.cpp[tag=buf_from_nested,indent=0]
+include::example$snippets/5a_contiguous_buffers.cpp[tag=buf_from_nested,indent=0]
 ----
 
 The `const`-ness of `.data()` on the source type determines if the factory produces
