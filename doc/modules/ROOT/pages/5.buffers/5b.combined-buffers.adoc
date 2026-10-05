@@ -58,6 +58,10 @@ while retaining the storage at its original location.
 Treating a single unit buffer as a one-element sequence is intentional, to make the library API smaller. 
 Internally, it is treated as a single-element range.
 
+While a structure looks two-dimensional, the bytes across all unit buffers 
+are interpretted and transmitted as a single sequence: first the bytes from the first unit buffer,
+then the bytes from the second unit buffer, and so on.  
+
 The mechanism for handling ranges of buffers assumes that the number of elements will be around four.
 In fact, some implementations will perform suboptimally when you use ranges of more than 16 unit buffers.
 
@@ -156,9 +160,8 @@ value: it collects its tasks first, then awaits them together.
 
 == Rationale
 
-[NOTE]
-====
-*Why `void*` rather than `std::byte`?*
+
+=== Why `void*` rather than `std::byte`?
 
 Two concrete forces decide it:
 
@@ -166,12 +169,10 @@ Two concrete forces decide it:
 * *Callers supply many element types.* Data arrives as `char[]`, `unsigned char[]`, `std::byte[]`, `std::string`, and more. One neutral pointer erases all of them to a single representation. `std::span<std::byte>` would make every caller reinterpret first, and `std::span<void>` is ill-formed.
 
 This is an argument from layout and from caller convenience, not from semantics. "Raw memory" describes `std::byte` just as well as it describes `void*`.
-====
 
 
-[NOTE]
-====
-*Why concepts rather than one span type?*
+
+=== Why concepts rather than one span type?
 
 `std::span<std::span<std::byte>>` is the reflexive answer for multiple buffers, and it works. The problem is composition. Joining a two-buffer header to a three-buffer body means building a new five-element array, so every composition allocates:
 
@@ -183,7 +184,7 @@ include::example$snippets/5b_combined_buffers.cpp[tag=span_combine,indent=0]
 A concept accepts the composite directly, with no allocation and no overload per shape.
 
 At type-erasure boundaries the tradeoff reverses. Virtual functions need concrete types, so Capy converts to concrete descriptors internally and keeps concepts at the user-facing edge.
-====
+
 
 === Why Bidirectional?
 
