@@ -8,7 +8,7 @@
 // Official repository: https://github.com/cppalliance/capy
 //
 
-// Compiled fragments shown in pages/5.buffers/5b.combined-buffers.adoc.
+// Compiled fragments shown in pages/5.buffers/5b.composite-buffers.adoc.
 //
 //
 
@@ -239,7 +239,7 @@ capy::task<> send_sliced(
     BOOST_TEST(capy::buffer_size(rest) == capy::buffer_size(bufs) - 16384);
 }
 
-struct combined_buffers_test
+struct composite_buffers_test
 {
     void
     testManualCombine()
@@ -531,4 +531,4 @@ struct combined_buffers_test
 
 } // namespace
 
-TEST_SUITE(combined_buffers_test, "boost.capy.doc.5b_combined_buffers");
+TEST_SUITE(composite_buffers_test, "boost.capy.doc.5b_composite_buffers");

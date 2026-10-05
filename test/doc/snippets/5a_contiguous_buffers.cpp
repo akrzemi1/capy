@@ -8,7 +8,7 @@
 // Official repository: https://github.com/cppalliance/capy
 //
 
-// Compiled fragments shown in pages/5.buffers/5a.unit-buffers.adoc.
+// Compiled fragments shown in pages/5.buffers/5a.contiguous-buffers.adoc.
 
 #include "../doc_warnings.hpp"
 
@@ -34,7 +34,7 @@ namespace capy = boost::capy;
 
 namespace {
 
-struct unit_buffers_test
+struct contiguous_buffers_test
 {
     void
     testConstruct()
@@ -205,4 +205,4 @@ struct unit_buffers_test
 
 } // namespace
 
-TEST_SUITE(unit_buffers_test, "boost.capy.doc.5a_unit_buffers");
+TEST_SUITE(contiguous_buffers_test, "boost.capy.doc.5a_contiguous_buffers");

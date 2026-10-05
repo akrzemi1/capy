@@ -22,10 +22,10 @@ designed with the following criteria in mind:
 
 == What This Section Covers
 
-* xref:5.buffers/5a.unit-buffers.adoc[Unit Buffers] -- cpp:const_buffer[] and
+* xref:5.buffers/5a.contiguous-buffers.adoc[Contiguous Buffers] -- cpp:const_buffer[] and
   cpp:mutable_buffer[], the two handle types that refer to one contiguous
   region of storage that you own.
-* xref:5.buffers/5b.combined-buffers.adoc[Combined Buffers] -- the concepts
+* xref:5.buffers/5b.composite-buffers.adoc[Composite Buffers] -- the concepts
   that describe sequences of those handles.
 * xref:5.buffers/5c.system-io-integration.adoc[System I/O Integration] --
   how a sequence maps onto the structures that native I/O systems expect.
